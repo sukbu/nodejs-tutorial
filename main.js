@@ -2,8 +2,8 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
-
 var template = require('./lib/template.js')
+var path = require('path');
 
 
 var server = http.createServer(function (request, response) {
@@ -30,14 +30,15 @@ var server = http.createServer(function (request, response) {
         var html = template.HTML(title, list,
           `<h2>${title}</h2>${description}`,
           `<a href="/create">create</a>`
-          );
+        );
         response.writeHead(200);
         response.end(html);
 
       })
     } else {
       fs.readdir('./data', function (error, files) {
-        fs.readFile(`data/${queryData.id}`, 'utf8', function (err, description) {
+        var filteredId = path.parse(queryData.id).base;
+        fs.readFile(`data/${filteredId}`, 'utf8', function (err, description) {
           var list = template.list(files);
           var title = queryData.id;
           var html = template.HTML(title, list,
@@ -99,7 +100,8 @@ var server = http.createServer(function (request, response) {
     });
   } else if (pathname === '/update') {
     fs.readdir('./data', function (error, files) {
-      fs.readFile(`data/${queryData.id}`, 'utf8', function (err, description) {
+      var filteredId = path.parse(queryData.id).base;
+      fs.readFile(`data/${filteredId}`, 'utf8', function (err, description) {
         var list = template.list(files);
         var title = queryData.id;
         var html = template.HTML(title, list,
@@ -158,7 +160,8 @@ var server = http.createServer(function (request, response) {
     request.on('end', function () {
       var post = qs.parse(body);
       var id = post.id;
-      fs.unlink(`data/${id}`, function (err) {
+      var filteredId = path.parse(id).base;
+      fs.unlink(`data/${filteredId}`, function (err) {
         response.writeHead(302, { Location: `/` });
         response.end();
       })
