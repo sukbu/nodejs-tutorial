@@ -1,0 +1,5 @@
+Cross Site Script
+&lt;script&gt;
+location.href='https://www.fb.com/';
+alert('merong');
+&lt;/script&gt;
