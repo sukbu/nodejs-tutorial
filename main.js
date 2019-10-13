@@ -17,15 +17,6 @@ var server = http.createServer(function (request, response) {
         var title = 'Welcome';
         var description = 'Hello Node.js';
 
-        /*
-        var list = templateList(files);
-        var template = templateHTML(title, list,
-          `<h2>${title}</h2>${description}`,
-          `<a href="/create">create</a>`);
-        response.writeHead(200);
-        response.end(template);
-        */
-
         var list = template.list(files);
         var html = template.HTML(title, list,
           `<h2>${title}</h2>${description}`,
