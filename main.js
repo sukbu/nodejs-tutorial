@@ -12,7 +12,7 @@ function templateHTML(title, list, body) {
     <meta charset="utf-8">
   </head>
   <body>
-    <h1><a href="/">WEB2</a></h1>
+    <h1><a href="/">WEB</a></h1>
     ${list}
     <a href="/create">create</a>
     <h2>${title}</h2>
@@ -66,7 +66,7 @@ var server = http.createServer(function (request, response) {
     fs.readdir('./data', function (error, files) {
       var title = 'Web - create';
       var list = templateList(files);
-      var template = templateHTML(title, list, 
+      var template = templateHTML(title, list,
         `
         <form action="http://localhost:3000/create_process" method="POST">
         <p><input type="text" name="title" placeholder="title"></p>
@@ -81,24 +81,30 @@ var server = http.createServer(function (request, response) {
       response.writeHead(200);
       response.end(template);
     })
-  } else if(pathname === '/create_process'){
+  } else if (pathname === '/create_process') {
     var body = '';
-    request.on('data',function(data){
+    request.on('data', function (data) {
       body += data;
 
-      if(body.length > 1e6){
+      if (body.length > 1e6) {
         request.connection.destroy();
       }
     });
-    request.on('end',function(){
+    request.on('end', function () {
       var post = qs.parse(body);
       var title = post.title;
       var description = post.description;
 
+      fs.writeFile(`data/${title}`, description, 'utf8', function (err) {
+        if (err) throw err;
+        console.log()
+
+        response.writeHead(302, {Location: `/?id=${title}`});
+        response.end();
+      });
+
       //console.log(post.title);
     });
-    response.writeHead(200);
-    response.end('success');
   }
   else {
     response.writeHead(404);
